@@ -15,21 +15,25 @@ const secondaryBtn = document.querySelector('a[href="#virtual-try-on"]');
  */
 async function loadHeroData() {
   const data = await fetchFromStrapi('hero');
+  console.log('[Main] Hero data received:', data);
 
-  // En Strapi 5, los datos vienen directamente en 'data', sin el wrapper 'attributes'
   if (data) {
-    // Ajustado a los nombres exactos de tu Strapi: tagLine y secundaryButton
+    // En Strapi 5, para Single Types, los datos suelen venir directamente.
+    // Si ves que no cargan, verifica en la consola si los nombres de los campos coinciden.
     const { tagLine, title, description, primaryButton, secundaryButton } = data;
 
-    if (heroTag) heroTag.textContent = tagLine;
-    if (heroTitle) heroTitle.innerHTML = title ? title.replace(/\n/g, '<br />') : '';
-    if (heroSubtitle) heroSubtitle.textContent = description;
-    if (primaryBtn) primaryBtn.textContent = primaryButton;
-    if (secondaryBtn) secondaryBtn.textContent = secundaryButton;
+    if (heroTag) heroTag.textContent = tagLine || heroTag.textContent;
+    if (heroTitle) heroTitle.innerHTML = title ? title.replace(/\n/g, '<br />') : heroTitle.innerHTML;
+    if (heroSubtitle) heroSubtitle.textContent = description || heroSubtitle.textContent;
+    if (primaryBtn) primaryBtn.textContent = primaryButton || primaryBtn.textContent;
+    if (secondaryBtn) secondaryBtn.textContent = secundaryButton || secondaryBtn.textContent;
 
-    console.log('Hero data updated from Strapi');
+    console.log('[Main] Hero DOM updated');
+  } else {
+    console.warn('[Main] No data received for Hero section');
   }
 }
+
 
 
 // Inicializar carga de datos

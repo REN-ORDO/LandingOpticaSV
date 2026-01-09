@@ -7,15 +7,28 @@ const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337';
  * @returns {Promise<Object>} - Los datos formateados
  */
 export async function fetchFromStrapi(endpoint) {
+    const url = `${STRAPI_URL}/api/${endpoint}?populate=*`;
+    console.log(`[Strapi] Fetching: ${url}`);
+
     try {
-        const response = await fetch(`${STRAPI_URL}/api/${endpoint}?populate=*`);
+        const response = await fetch(url, {
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
+
         if (!response.ok) {
-            throw new Error(`Error fetching ${endpoint}: ${response.statusText}`);
+            console.error(`[Strapi] Error ${response.status}: ${response.statusText} at ${url}`);
+            return null;
         }
-        const { data } = await response.json();
-        return data;
+
+        const json = await response.json();
+        console.log(`[Strapi] Success! Data received for ${endpoint}:`, json);
+
+        return json.data;
     } catch (error) {
-        console.error(`Error en Strapi API (${endpoint}):`, error);
+        console.error(`[Strapi] Critical Error (${endpoint}):`, error);
         return null;
     }
 }
